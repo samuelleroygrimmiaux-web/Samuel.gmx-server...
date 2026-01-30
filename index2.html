@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EduTrack">
+    <title>EduTrack - Gestion Scolaire</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            position: fixed;
+        }
+
+        input, textarea, select, button {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .menu-item:active {
+            background: rgba(0,0,0,0.2);
+        }
+
+        .menu-item.active {
+            background: rgba(0,0,0,0.2);
+            border-left-color: white;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .header-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding: 24px;
+        }
+
+        /* CARDS & SECTIONS */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="date"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="date"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 36px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"],
+        .checkbox-group input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            -webkit-appearance: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:active {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:active {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:active {
+            background: #059669;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        /* VISIBILITY */
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: block !important;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+            flex: 1;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-btn:active {
+            background: var(--gray-50);
+        }
+
+        /* GRID FOR DASHBOARD */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .stat-card:active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.absence {
+            border-left-color: var(--danger);
+        }
+
+        .stat-card.illness {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-content {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .stat-card-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        /* LIST ITEMS */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+            gap: 12px;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            word-break: break-word;
+        }
+
+        .list-item-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* MAIL LIST */
+        .mail-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .mail-item:active {
+            background: var(--gray-50);
+        }
+
+        .mail-from {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--gray-900);
+            word-break: break-word;
+        }
+
+        .mail-subject {
+            font-size: 12px;
+            color: var(--gray-700);
+            margin-top: 4px;
+            word-break: break-word;
+        }
+
+        .mail-preview {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page {
+            animation: slideInRight 0.3s ease;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 60px;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+            .sidebar-header {
+                padding: 8px 16px;
+                border-bottom: none;
+                border-right: 1px solid rgba(255,255,255,0.1);
+                min-width: 160px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .sidebar-header h1 {
+                font-size: 14px;
+                margin-bottom: 0;
+            }
+            .sidebar-header p {
+                display: none;
+            }
+            .sidebar-menu {
+                flex: 1;
+                padding: 0;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            .menu-item {
+                padding: 12px 16px;
+                min-width: 150px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            .menu-item:active {
+                border-left: none;
+                border-bottom-color: white;
+                background: rgba(255,255,255,0.1);
+            }
+            .menu-item.active {
+                border-left: none;
+                border-bottom-color: white;
+            }
+            .main-content {
+                height: calc(100vh - 60px);
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+            .header h2 {
+                font-size: 16px;
+            }
+            .header-info {
+                width: 100%;
+                justify-content: space-between;
+                font-size: 12px;
+            }
+            .content-area {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                max-height: 50px;
+            }
+            .sidebar-header {
+                min-width: 120px;
+                padding: 6px 12px;
+            }
+            .menu-item {
+                padding: 10px 12px;
+                min-width: 110px;
+                font-size: 12px;
+            }
+            .main-content {
+                height: calc(100vh - 50px);
+            }
+            .header {
+                padding: 12px 16px;
+            }
+            .header h2 {
+                font-size: 15px;
+            }
+            .content-area {
+                padding: 12px;
+            }
+            .card {
+                padding: 16px;
+                margin-bottom: 12px;
+            }
+            .form-group {
+                margin-bottom: 12px;
+            }
+            .btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>EduTrack</h1>
+                <p>Gestion Scolaire</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="presences">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Présences</span>
+                </div>
+                <div class="menu-item" data-page="infirmerie">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Infirmerie</span>
+                </div>
+                <div class="menu-item" data-page="online">
+                    <i class="fas fa-globe"></i>
+                    <span>Online</span>
+                </div>
+                <div class="menu-item" data-page="mail">
+                    <i class="fas fa-envelope"></i>
+                    <span>Boîte Mail</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="page-title">Dashboard</h2>
+                <div class="header-info">
+                    <span id="current-time"></span>
+                    <span id="current-date"></span>
+                </div>
+            </div>
+
+            <div class="content-area" id="content">
+                <!-- Pages will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============= STORAGE MANAGEMENT =============
+        let appData = {
+            absences: [],
+            illnesses: [],
+            sentMails: [],
+            receivedMails: [],
+            currentUser: 'Prof. Dupont'
+        };
+
+        function saveData() {
+            try {
+                localStorage.setItem('edutrack', JSON.stringify(appData));
+            } catch(e) {
+                console.warn('Stockage plein');
+            }
+        }
+
+        function loadData() {
+            try {
+                const stored = localStorage.getItem('edutrack');
+                if (stored) {
+                    appData = JSON.parse(stored);
+                }
+            } catch(e) {
+                console.warn('Erreur chargement');
+            }
+        }
+
+        // ============= DATA GENERATION =============
+        function generateRandomStudent() {
+            const prenom = ['Alice', 'Bob', 'Charlie', 'David', 'Emma', 'Fiona', 'Gabriel', 'Hannah', 'Igor', 'Julie', 'Kevin', 'Laura', 'Martin', 'Nora', 'Oscar', 'Patricia', 'Quentin', 'Rachel', 'Samuel', 'Théo'];
+            const nom = ['Dupont', 'Martin', 'Bernard', 'Thomas', 'Robert', 'Petit', 'Durand', 'Lefevre', 'Michel', 'Garcia', 'David', 'Perrin', 'Henry', 'Moreau', 'Roux', 'Vincent', 'Fournier', 'Morel', 'Girardin', 'Andre'];
+            const classe = ['6A', '6B', '6C', '7A', '7B', '7C', '8A', '8B', '8C', '9A', '9B', '9C'];
+            
+            return {
+                prenom: prenom[Math.floor(Math.random() * prenom.length)],
+                nom: nom[Math.floor(Math.random() * nom.length)],
+                classe: classe[Math.floor(Math.random() * classe.length)],
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function generateRandomMail() {
+            const senders = ['parent.martin@email.com', 'directeur@ecole.be', 'infirmiere@ecole.be', 'parent.dupont@email.com', 'parent.bernard@email.com', 'secretaire@ecole.be', 'parent.thomas@email.com', 'responsable.cantine@ecole.be'];
+            const subjects = ['Absence de votre enfant - Justificatif joint', 'Visite à l\'infirmerie', 'Rendez-vous parent-professeur', 'Absence prévue du 15 au 17 février', 'Dossier d\'assurance scolaire', 'Sortie scolaire prévue', 'Allergies alimentaires de votre enfant', 'Renseignements pour le dossier scolaire', 'Absence tardive ce matin', 'Certificat médical à jour'];
+            const previews = ['Merci de trouver ci-joint le justificatif...', 'Votre enfant est passé à l\'infirmerie...', 'Je souhaiterais vous rencontrer...', 'Mon enfant sera absent du...', 'Veuillez trouver le dossier d\'assurance...', 'Nous organisons une sortie pédagogique...', 'Mon enfant a une allergie à...', 'Veuillez compléter le formulaire...', 'Mon enfant arrivera 30 minutes tard...', 'Le certificat médical est à jour...'];
+
+            return {
+                from: senders[Math.floor(Math.random() * senders.length)],
+                subject: subjects[Math.floor(Math.random() * subjects.length)],
+                preview: previews[Math.floor(Math.random() * previews.length)],
+                body: previews[Math.floor(Math.random() * previews.length)] + ' Lorem ipsum dolor sit amet...',
+                timestamp: new Date().toISOString(),
+                id: Math.random().toString(36).substr(2, 9)
+            };
+        }
+
+        function generateAutoReply(mailContent) {
+            const keywords = {
+                absence: ['absent', 'absence', 'malade', 'justif'],
+                infirmerie: ['infirm', 'santé', 'symptôm', 'médecin', 'hospitalier'],
+                sortie: ['sortie', 'excursion', 'visite', 'pédagog'],
+                assurance: ['assurance', 'dossier', 'feuille', 'couvertur'],
+                reunion: ['réunion', 'rencontre', 'entretien', 'parent']
+            };
+
+            const subjects = {
+                absence: [
+                    'Merci pour la justification d\'absence.',
+                    'Nous avons bien reçu votre justificatif.',
+                    'L\'absence a été enregistrée.',
+                    'Merci de nous avoir informés.'
+                ],
+                infirmerie: [
+                    'Nous allons contacter les parents immédiatement.',
+                    'Votre enfant est entre de bonnes mains à l\'infirmerie.',
+                    'Nous vous tiendrons informés de l\'évolution.',
+                    'L\'équipe médicale prend soin de votre enfant.'
+                ],
+                sortie: [
+                    'Merci pour votre retour concernant la sortie.',
+                    'Nous avons bien noté votre réponse.',
+                    'Les détails de la sortie vous ont été envoyés.',
+                    'L\'autorisation a été enregistrée.'
+                ],
+                assurance: [
+                    'Merci d\'avoir complété le dossier d\'assurance.',
+                    'Nous avons reçu votre dossier d\'assurance.',
+                    'Le dossier a été enregistré dans nos archives.',
+                    'Merci de nous avoir fourni ces informations.'
+                ],
+                reunion: [
+                    'Nous serons ravis de vous rencontrer.',
+                    'Votre demande de réunion a été notée.',
+                    'Un créneau vous sera proposé rapidement.',
+                    'Merci de votre intérêt.'
+                ]
+            };
+
+            // Detect mail type
+            let mailType = 'absence';
+            const lowerContent = mailContent.toLowerCase();
+            
+            for (const [type, words] of Object.entries(keywords)) {
+                if (words.some(word => lowerContent.includes(word))) {
+                    mailType = type;
+                    break;
+                }
+            }
+
+            // Generate random reply based on type
+            const replies = subjects[mailType] || subjects.absence;
+            const reply = replies[Math.floor(Math.random() * replies.length)];
+
+            return {
+                from: ['directeur@ecole.be', 'secretaire@ecole.be', 'parent.manager@ecole.be'][Math.floor(Math.random() * 3)],
+                subject: 'RE: [Réponse automatique]',
+                preview: reply,
+                body: reply + '\n\nCordialement,\nL\'équipe administrative de l\'école',
+                timestamp: new Date().toISOString(),
+                id: Math.random().toString(36).substr(2, 9)
+            };
+        }
+
+        // ============= PAGE ROUTING =============
+        const pages = {
+            dashboard: '<div class="page"><div class="dashboard-grid"><div class="stat-card absence" onclick="showAbsenceDetail()"><div class="stat-card-title">Absents</div><div class="stat-card-content" id="total-absences">0</div><div class="stat-card-meta">Cliquez pour détails</div></div><div class="stat-card illness" onclick="showIllnessDetail()"><div class="stat-card-title">À l\'infirmerie</div><div class="stat-card-content" id="total-illnesses">0</div><div class="stat-card-meta">Cliquez pour détails</div></div></div><div class="card"><div class="card-title">Absences du jour</div><div id="dashboard-absences"></div></div><div class="card"><div class="card-title">Élèves à l\'infirmerie</div><div id="dashboard-illnesses"></div></div></div>',
+            presences: '<div class="page"><div class="card"><div class="card-title">Enregistrer une présence</div><div class="form-group"><label>Classe</label><input type="text" id="presence-class" placeholder="Ex: 6A"></div><div class="form-group"><label>Date</label><input type="date" id="presence-date"></div><div style="margin-bottom: 16px;"><label style="display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 10px;">Statut</label><div class="checkbox-group" onclick="togglePresenceStatus(\'all\')"><input type="radio" name="presence-status" value="all" id="status-all" checked><label for="status-all">Toute la classe est présente</label></div><div class="checkbox-group" onclick="togglePresenceStatus(\'some\')"><input type="radio" name="presence-status" value="some" id="status-some"><label for="status-some">Il y a un/des absent(s)</label></div></div><div id="absence-form" class="hidden"><div class="card" style="background: var(--gray-50); border: 1px solid var(--gray-200);"><div class="card-title">Détails des absences</div><div id="absence-list"></div><button class="btn btn-primary" style="margin-top: 12px;" onclick="addAbsenceField()">+ Ajouter un absent</button></div></div><button class="btn btn-primary" onclick="savePresence()" style="margin-top: 16px;"><i class="fas fa-save"></i> Sauvegarder</button></div></div>',
+            infirmerie: '<div class="page"><div class="card"><div class="card-title">Enregistrer un patient</div><div class="form-group"><label>Nom</label><input type="text" id="illness-nom" placeholder="Nom de l\'élève"></div><div class="form-group"><label>Prénom</label><input type="text" id="illness-prenom" placeholder="Prénom de l\'élève"></div><div class="form-group"><label>Classe</label><input type="text" id="illness-class" placeholder="Ex: 6A"></div><div class="form-group"><label>Statut</label><select id="illness-status"><option value="">-- Sélectionner --</option><option value="home">Rentre chez lui</option><option value="stay">Reste à l\'infirmerie</option></select></div><div class="form-group"><label>Symptômes</label><textarea id="illness-symptoms" placeholder="Décrivez les symptômes observés..."></textarea></div><button class="btn btn-primary" onclick="saveIllness()"><i class="fas fa-save"></i> Sauvegarder</button></div></div>',
+            online: '<div class="page"><div class="card"><div class="card-title">Absences détectées en ligne</div><div id="online-absences"></div></div></div>',
+            mail: '<div class="page"><div class="tabs"><button class="tab-btn active" onclick="switchMailTab(\'compose\')">Composer</button><button class="tab-btn" onclick="switchMailTab(\'inbox\')">Boîte de réception</button><button class="tab-btn" onclick="switchMailTab(\'sent\')">Mails envoyés</button></div><div id="mail-compose" class="mail-tab"><div class="card"><div class="form-group"><label>Destinataire</label><input type="email" id="mail-to" placeholder="adresse@email.com"></div><div class="form-group"><label>Objet</label><input type="text" id="mail-subject" placeholder="Objet du mail"></div><div class="form-group"><label>Message</label><textarea id="mail-body" placeholder="Écrivez votre message..."></textarea></div><button class="btn btn-primary" onclick="sendMail()"><i class="fas fa-paper-plane"></i> Envoyer</button></div></div><div id="mail-inbox" class="mail-tab hidden"><div class="card"><div id="inbox-list"></div></div></div><div id="mail-sent" class="mail-tab hidden"><div class="card"><div id="sent-list"></div></div></div></div>'
+        };
+
+        function loadPage(pageName) {
+            const content = document.getElementById('content');
+            content.innerHTML = pages[pageName] || '';
+            
+            const titles = { dashboard: 'Dashboard', presences: 'Gestion des Présences', infirmerie: 'Infirmerie', online: 'Absences en Ligne', mail: 'Boîte Mail' };
+            document.getElementById('page-title').textContent = titles[pageName];
+            
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            
+            if (pageName === 'dashboard') updateDashboard();
+            else if (pageName === 'presences') setPresenceDate();
+            else if (pageName === 'online') displayOnlineAbsences();
+            else if (pageName === 'mail') { displayInbox(); displaySentMails(); }
+        }
+
+        // ============= DASHBOARD =============
+        function updateDashboard() {
+            const totalAbsences = document.getElementById('total-absences');
+            const totalIllnesses = document.getElementById('total-illnesses');
+            const absencesDiv = document.getElementById('dashboard-absences');
+            const illnessesDiv = document.getElementById('dashboard-illnesses');
+            
+            // Only update if elements exist (on dashboard page)
+            if (totalAbsences) totalAbsences.textContent = appData.absences.length;
+            if (totalIllnesses) totalIllnesses.textContent = appData.illnesses.length;
+            
+            if (absencesDiv) {
+                if (appData.absences.length === 0) {
+                    absencesDiv.innerHTML = '<div class="empty-state"><p>Aucune absence enregistrée</p></div>';
+                } else {
+                    absencesDiv.innerHTML = appData.absences.map((a, idx) => `
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">${a.prenom} ${a.nom}</div>
+                                <div class="list-item-meta">Classe ${a.class} - ${new Date(a.timestamp).toLocaleString('fr-BE')}</div>
+                            </div>
+                            <button class="btn btn-small btn-danger" onclick="removeAbsence(${idx})">−</button>
+                        </div>
+                    `).join('');
+                }
+            }
+            
+            if (illnessesDiv) {
+                if (appData.illnesses.length === 0) {
+                    illnessesDiv.innerHTML = '<div class="empty-state"><p>Aucun patient enregistré</p></div>';
+                } else {
+                    illnessesDiv.innerHTML = appData.illnesses.map((i, idx) => `
+                        <div class="list-item">
+                            <div class="list-item-content">
+                                <div class="list-item-title">${i.prenom} ${i.nom}</div>
+                                <div class="list-item-meta">Classe ${i.class} - ${i.status === 'home' ? 'Rentré chez lui' : 'À l\'infirmerie'}</div>
+                            </div>
+                            <button class="btn btn-small btn-danger" onclick="removeIllness(${idx})">−</button>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        function showAbsenceDetail() {
+            if (appData.absences.length === 0) return;
+            alert('Absences du jour:\n\n' + appData.absences.map(a => `${a.prenom} ${a.nom} (${a.class})`).join('\n'));
+        }
+
+        function showIllnessDetail() {
+            if (appData.illnesses.length === 0) return;
+            alert('À l\'infirmerie:\n\n' + appData.illnesses.map(i => `${i.prenom} ${i.nom} (${i.class})`).join('\n'));
+        }
+
+        function removeAbsence(idx) {
+            appData.absences.splice(idx, 1);
+            saveData();
+            updateDashboard();
+        }
+
+        function removeIllness(idx) {
+            appData.illnesses.splice(idx, 1);
+            saveData();
+            updateDashboard();
+        }
+
+        // ============= PRESENCES =============
+        function setPresenceDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('presence-date').value = today;
+        }
+
+        function togglePresenceStatus(status) {
+            const form = document.getElementById('absence-form');
+            if (status === 'some') {
+                form.classList.remove('hidden');
+                if (document.getElementById('absence-list').innerHTML === '') {
+                    addAbsenceField();
+                }
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
+        function addAbsenceField() {
+            const list = document.getElementById('absence-list');
+            const id = 'absence_' + Math.random().toString(36).substr(2, 9);
+            const field = document.createElement('div');
+            field.className = 'form-group';
+            field.id = id;
+            field.innerHTML = `
+                <div style="display: flex; gap: 8px;">
+                    <div style="flex: 1;"><input type="text" placeholder="Nom" class="absence-nom"></div>
+                    <div style="flex: 1;"><input type="text" placeholder="Prénom" class="absence-prenom"></div>
+                    <div style="flex: 1;"><label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">Mail reçu</label><input type="checkbox" class="absence-mail" style="width: 100%; padding: 8px;"></div>
+                    <button class="btn btn-danger btn-small" onclick="document.getElementById('${id}').remove()" style="height: 44px;">−</button>
+                </div>
+            `;
+            list.appendChild(field);
+        }
+
+        function savePresence() {
+            const classe = document.getElementById('presence-class').value;
+            const status = document.querySelector('input[name="presence-status"]:checked').value;
+            
+            if (!classe) {
+                alert('Veuillez entrer la classe');
+                return;
+            }
+            
+            if (status === 'some') {
+                const absences = document.querySelectorAll('.form-group:has(.absence-nom)');
+                absences.forEach(absence => {
+                    const nom = absence.querySelector('.absence-nom').value;
+                    const prenom = absence.querySelector('.absence-prenom').value;
+                    
+                    if (nom && prenom) {
+                        appData.absences.push({
+                            nom: nom,
+                            prenom: prenom,
+                            class: classe,
+                            timestamp: new Date().toISOString(),
+                            id: Math.random().toString(36).substr(2, 9)
+                        });
+                    }
+                });
+            }
+            
+            saveData();
+            alert('Présence enregistrée!');
+            loadPage('dashboard');
+        }
+
+        // ============= INFIRMERIE =============
+        function saveIllness() {
+            const nom = document.getElementById('illness-nom').value;
+            const prenom = document.getElementById('illness-prenom').value;
+            const classe = document.getElementById('illness-class').value;
+            const status = document.getElementById('illness-status').value;
+            const symptoms = document.getElementById('illness-symptoms').value;
+            
+            if (!nom || !prenom || !classe || !status) {
+                alert('Remplissez tous les champs');
+                return;
+            }
+            
+            appData.illnesses.push({
+                nom: nom,
+                prenom: prenom,
+                class: classe,
+                status: status,
+                symptoms: symptoms,
+                timestamp: new Date().toISOString(),
+                id: Math.random().toString(36).substr(2, 9)
+            });
+            
+            saveData();
+            alert('Patient enregistré!');
+            loadPage('dashboard');
+        }
+
+        // ============= ONLINE =============
+        function displayOnlineAbsences() {
+            const container = document.getElementById('online-absences');
+            if (appData.absences.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>Aucune absence détectée</p></div>';
+                return;
+            }
+            
+            container.innerHTML = appData.absences.map((absence, idx) => `
+                <div class="list-item">
+                    <div class="list-item-content">
+                        <div class="list-item-title">${absence.prenom} ${absence.nom}</div>
+                        <div class="list-item-meta">Classe ${absence.classe}</div>
+                    </div>
+                    <button class="btn btn-primary btn-small" onclick="confirmAbsenceFromOnline(${idx})"><i class="fas fa-check"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function confirmAbsenceFromOnline(idx) {
+            appData.absences[idx].processed = true;
+            alert(`${appData.absences[idx].prenom} ${appData.absences[idx].nom} enregistré.`);
+            displayOnlineAbsences();
+            saveData();
+            // Only update dashboard if on dashboard page
+            if (document.getElementById('total-absences')) {
+                updateDashboard();
+            }
+        }
+
+        // ============= MAIL =============
+        function switchMailTab(tab) {
+            document.querySelectorAll('.mail-tab').forEach(t => t.classList.add('hidden'));
+            document.getElementById('mail-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function displayInbox() {
+            const container = document.getElementById('inbox-list');
+            if (!container) return;
+            if (appData.receivedMails.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Aucun mail</p></div>';
+                return;
+            }
+            
+            container.innerHTML = appData.receivedMails.map((mail, idx) => `
+                <div class="mail-item">
+                    <div class="mail-from">${mail.from}</div>
+                    <div class="mail-subject">${mail.subject}</div>
+                    <div class="mail-preview">${mail.preview}</div>
+                    <div style="margin-top: 10px; display: flex; gap: 8px;">
+                        <button class="btn btn-primary btn-small" onclick="replyMail('${mail.from}', '${mail.subject.replace(/'/g, "\\'")}')"><i class="fas fa-reply"></i> Répondre</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteMail(${idx})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displaySentMails() {
+            const container = document.getElementById('sent-list');
+            if (!container) return;
+            if (appData.sentMails.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Aucun mail envoyé</p></div>';
+                return;
+            }
+            
+            container.innerHTML = appData.sentMails.map((mail, idx) => `
+                <div class="mail-item">
+                    <div class="mail-from">À: <strong>${mail.to}</strong></div>
+                    <div class="mail-subject">${mail.subject}</div>
+                    <div class="mail-preview">${mail.body.substring(0, 80)}...</div>
+                    <div class="mail-preview" style="color: var(--gray-400);">${new Date(mail.timestamp).toLocaleString('fr-BE')}</div>
+                </div>
+            `).join('');
+        }
+
+        function sendMail() {
+            const to = document.getElementById('mail-to').value;
+            const subject = document.getElementById('mail-subject').value;
+            const body = document.getElementById('mail-body').value;
+            
+            if (!to || !subject || !body) {
+                alert('Remplissez tous les champs');
+                return;
+            }
+            
+            appData.sentMails.push({
+                to: to,
+                subject: subject,
+                body: body,
+                timestamp: new Date().toISOString(),
+                id: Math.random().toString(36).substr(2, 9)
+            });
+            
+            document.getElementById('mail-to').value = '';
+            document.getElementById('mail-subject').value = '';
+            document.getElementById('mail-body').value = '';
+            
+            saveData();
+            alert('Mail envoyé!');
+            displaySentMails();
+
+            // Generate automatic reply after 30 seconds
+            setTimeout(() => {
+                const autoReply = generateAutoReply(body);
+                appData.receivedMails.push(autoReply);
+                saveData();
+                
+                // Refresh inbox if visible
+                const inboxList = document.getElementById('inbox-list');
+                if (inboxList && !inboxList.parentElement.classList.contains('hidden')) {
+                    displayInbox();
+                }
+            }, 30000);
+        }
+
+        function replyMail(from, subject) {
+            document.getElementById('mail-to').value = from;
+            const replySubject = subject.startsWith('Re:') ? subject : 'Re: ' + subject;
+            document.getElementById('mail-subject').value = replySubject;
+            document.getElementById('mail-body').value = '';
+            switchMailTab('compose');
+            document.getElementById('mail-body').focus();
+        }
+
+        function deleteMail(idx) {
+            appData.receivedMails.splice(idx, 1);
+            saveData();
+            displayInbox();
+        }
+
+        // ============= TIME DISPLAY =============
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit' });
+            const date = now.toLocaleDateString('fr-BE');
+            const timeEl = document.getElementById('current-time');
+            const dateEl = document.getElementById('current-date');
+            if (timeEl) timeEl.textContent = time;
+            if (dateEl) dateEl.textContent = date;
+        }
+
+        // ============= INITIALIZATION =============
+        loadData();
+        
+        // Initialize mails if empty
+        if (appData.receivedMails.length === 0) {
+            for (let i = 0; i < 5; i++) {
+                appData.receivedMails.push(generateRandomMail());
+            }
+            saveData();
+        }
+
+        // Initialize absences if empty
+        if (appData.absences.length === 0) {
+            for (let i = 0; i < 5; i++) {
+                const student = generateRandomStudent();
+                student.id = Math.random().toString(36).substr(2, 9);
+                appData.absences.push(student);
+            }
+            saveData();
+        }
+
+        // Event listeners
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                loadPage(this.dataset.page);
+            });
+        });
+
+        // Update time
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Generate new mails every 10 minutes
+        setInterval(() => {
+            for (let i = 0; i < 5; i++) {
+                appData.receivedMails.push(generateRandomMail());
+            }
+            for (let i = 0; i < 5; i++) {
+                const student = generateRandomStudent();
+                student.id = Math.random().toString(36).substr(2, 9);
+                appData.absences.push(student);
+            }
+            saveData();
+            const inboxList = document.getElementById('inbox-list');
+            if (inboxList && !inboxList.parentElement.classList.contains('hidden')) {
+                displayInbox();
+            }
+        }, 600000);
+
+        // Load initial page
+        loadPage('dashboard');
+    </script>
+</body>
+</html>
